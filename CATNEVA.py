@@ -4,6 +4,7 @@ import time
 import random
 
 x = 1300
+target_x = -1
 
 #Obtain screen resolution [x, y]
 roo = tk.Tk()
@@ -12,7 +13,9 @@ roo.attributes('-fullscreen', True)
 roo.state('iconic')
 geometry = roo.winfo_geometry()
 roo.destroy()
-screen_res = geometry.split("+")[0].split("x")
+screen_res = [int(a) for a in geometry.split("+")[0].split("x")]
+print(screen_res)
+
 
 #Create image groupings
 idle = [1,[0,1]]
@@ -20,7 +23,7 @@ gonnasleep = [0.75,[2,3,4,5,6,7,8]]
 sleeping = [0.5,[9,10,11,12]]
 wakeup = [0.75,[13,14,15,16,17]]
 walkleft = [0.6,[18,19,20,21]]
-walkright = [0.2,[22,23,24,25]]
+walkright = [0.6,[22,23,24,25]]
 
 
 # Create window
@@ -74,6 +77,19 @@ label = tk.Label(root, bd=0, bg='green')
 label.config(width=150, height=150)
 label.pack()
 
+#Click to move functionality
+def label_clicked(event):
+    global target_x
+    if x > (screen_res[0]//2):
+        target_x = 0
+        event_run(walkleft)
+    else:
+        target_x = screen_res[0] - 150
+        event_run(walkright)
+    
+
+label.bind("<Button-1>", label_clicked)
+
 #Decide next event
 def event_decide(last_event):
     match last_event[1][0]:
@@ -115,12 +131,18 @@ def event_decide(last_event):
 def event_run(event):
     global x
     global screen_res
+    global target_x
     
     if event[1][0] == 18: #walkleft
         
         #Pick Random destination to left
         left_limit = max(0, x - 300)
         new_x =(random.randint(left_limit,x))
+        wait_time = event[0]
+        if target_x != -1:
+            new_x = target_x
+            wait_time = 0.2
+            target_x = -1
         increment = (x-new_x)//4
 
         for frame in event[1]:
@@ -128,14 +150,19 @@ def event_run(event):
             x -= increment
             root.geometry("150x150+"+str(x)+"+675")
             root.update()
-            time.sleep(event[0])
+            time.sleep(wait_time)
         
         
     elif event[1][0] == 22: #walkright
 
         #Pick Random destination to left
-        right_limit = min(screen_res[1], x + 300)
-        new_x =(random.randint(right_limit,x))
+        right_limit = min(screen_res[0], x + 300)
+        new_x =(random.randint(x,right_limit))
+        wait_time = event[0]
+        if target_x != -1:
+            new_x = target_x
+            wait_time = 0.2
+            target_x = -1
         increment = (x+new_x)//4
 
         for frame in event[1]:
@@ -143,7 +170,7 @@ def event_run(event):
             x += increment
             root.geometry("150x150+"+str(x)+"+675")
             root.update()
-            time.sleep(event[0])
+            time.sleep(wait_time)
     
     else: #events with no movements
         for frame in event[1]:
