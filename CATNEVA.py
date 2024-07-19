@@ -24,6 +24,7 @@ sleeping = [0.5,[9,10,11,12]]
 wakeup = [0.75,[13,14,15,16,17]]
 walkleft = [0.6,[18,19,20,21]]
 walkright = [0.6,[22,23,24,25]]
+pet = [1, [26]]
 
 
 # Create window
@@ -58,7 +59,8 @@ image_paths = [
     "images/walkright1.png",
     "images/walkright2.png",
     "images/walkright3.png",
-    "images/walkright4.png"
+    "images/walkright4.png",
+    "images/pet.png"
 ]
 
 images = []
@@ -88,7 +90,11 @@ def label_clicked(event):
         event_run(walkright)
     
 
-label.bind("<Button-1>", label_clicked)
+def petting(event):
+    event_run(pet)
+
+label.bind("<Button-1>",label_clicked)
+label.bind("<Motion>",petting)
 
 #Decide next event
 def event_decide(last_event):
@@ -125,6 +131,9 @@ def event_decide(last_event):
         
         case 22: #walkright
             return idle
+        
+        case 26: #pet
+            return idle
 
 
 #Run event
@@ -156,7 +165,7 @@ def event_run(event):
     elif event[1][0] == 22: #walkright
 
         #Pick Random destination to right
-        right_limit = min(screen_res[0], x + 300)
+        right_limit = min(screen_res[0]-150, x + 300)
         new_x =(random.randint(x,right_limit))
         wait_time = event[0]
         if target_x != -1:
