@@ -84,7 +84,7 @@ def label_clicked(event):
         target_x = 0
         event_run(walkleft)
     else:
-        target_x = screen_res[0] - 150
+        target_x = screen_res[0] - 300
         event_run(walkright)
     
 
@@ -132,7 +132,7 @@ def event_run(event):
     global x
     global screen_res
     global target_x
-    
+    print("x: "+str(x))
     if event[1][0] == 18: #walkleft
         
         #Pick Random destination to left
@@ -144,7 +144,7 @@ def event_run(event):
             wait_time = 0.2
             target_x = -1
         increment = (x-new_x)//4
-
+        
         for frame in event[1]:
             label.config(image=images[frame])
             x -= increment
@@ -155,7 +155,7 @@ def event_run(event):
         
     elif event[1][0] == 22: #walkright
 
-        #Pick Random destination to left
+        #Pick Random destination to right
         right_limit = min(screen_res[0], x + 300)
         new_x =(random.randint(x,right_limit))
         wait_time = event[0]
@@ -163,8 +163,8 @@ def event_run(event):
             new_x = target_x
             wait_time = 0.2
             target_x = -1
-        increment = (x+new_x)//4
-
+        increment = (new_x-x)//4
+        
         for frame in event[1]:
             label.config(image=images[frame])
             x += increment
